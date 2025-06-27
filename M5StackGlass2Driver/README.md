@@ -33,6 +33,7 @@ This driver exposes the SSD1309 as a framebuffer device /dev/fb0.
 
 cd driver
 make
+sudo modprobe regmap-i2c
 sudo insmod ssd1309fb.ko
 echo ssd1309fb 0x3c | sudo tee /sys/bus/i2c/devices/i2c-1/new_device
 
