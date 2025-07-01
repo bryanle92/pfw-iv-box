@@ -136,6 +136,6 @@ static struct i2c_driver ssd1309fb_driver = {
 
 // TODO: Register the driver
 
-MODULE_AUTHOR("Interview Candidate");
+MODULE_AUTHOR("Platform Interview");
 MODULE_DESCRIPTION("SSD1309 OLED framebuffer driver - Complete the implementation");
 MODULE_LICENSE("GPL");
