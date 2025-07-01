@@ -9,9 +9,7 @@
 #include <linux/mutex.h>
 #include <linux/device.h>
 
-#define SSD1309_WIDTH      128
-#define SSD1309_HEIGHT     64
-#define SSD1309_BUF_SIZE   (SSD1309_WIDTH * SSD1309_HEIGHT / 8)
+// TODO: Define display dimensions and buffer size
 
 struct oled_device {
     struct i2c_client *client;
@@ -21,220 +19,123 @@ struct oled_device {
     struct mutex lock;
 };
 
+// TODO: Configure regmap for I2C communication
 static const struct regmap_config ssd1309_regmap_config = {
-    .reg_bits = 8,
-    .val_bits = 8,
-    .cache_type = REGCACHE_NONE,
+    // TODO: Fill in regmap configuration
 };
 
+// TODO: Implement display update function
+// SSD1309 uses page-based addressing (8 pages, each 8 pixels high)
 static void ssd1309fb_update_display(struct oled_device *oled)
 {
-    int page, i;
-    for (page = 0; page < 8; page++) {
-        int offset = page * 128;
-
-        // Set page address
-        regmap_write(oled->regmap, 0x00, 0xB0 + page);
-
-        // Set column address range: 0 to 127
-        regmap_write(oled->regmap, 0x00, 0x21); // column address command
-        regmap_write(oled->regmap, 0x00, 0x00); // start
-        regmap_write(oled->regmap, 0x00, 0x7F); // end
-
-        // Write 128 bytes of display data
-        for (i = 0; i < 128; i++) {
-            regmap_write(oled->regmap, 0x40, oled->buffer[offset + i]);
-        }
-    }
+    // TODO: Implement page-by-page update
+    // Set page address (0xB0 + page), column range (0x00 to 0x7F)
+    // Write 128 bytes of display data for each page
 }
 
+// TODO: Implement hardware initialization sequence
+// Follow SSD1309 datasheet initialization commands
 static void ssd1309_hw_init(struct oled_device *oled)
 {
-    regmap_write(oled->regmap, 0x00, 0xAE); // Display OFF
-
-    regmap_write(oled->regmap, 0x00, 0xA1); // Segment remap
-    regmap_write(oled->regmap, 0x00, 0xC8); // COM scan direction
-
-    regmap_write(oled->regmap, 0x00, 0xD3); // Display offset
-    regmap_write(oled->regmap, 0x00, 0x00);
-
-    regmap_write(oled->regmap, 0x00, 0x40); // Display start line = 0
-
-    regmap_write(oled->regmap, 0x00, 0xA8); // Multiplex ratio
-    regmap_write(oled->regmap, 0x00, 0x3F); // 0x3F = 63 (64 lines)
-
-    regmap_write(oled->regmap, 0x00, 0xDA); // COM pins config
-    regmap_write(oled->regmap, 0x00, 0x12); // Alternative config
-
-    regmap_write(oled->regmap, 0x00, 0xA6); // Normal display (not inverse)
-
-    // Set column address: 0 - 127
-    regmap_write(oled->regmap, 0x00, 0x21);
-    regmap_write(oled->regmap, 0x00, 0x00);
-    regmap_write(oled->regmap, 0x00, 0x7F);
-
-    // Set page address: 0 - 7
-    regmap_write(oled->regmap, 0x00, 0x22);
-    regmap_write(oled->regmap, 0x00, 0x00);
-    regmap_write(oled->regmap, 0x00, 0x07);
-
-    regmap_write(oled->regmap, 0x00, 0xAF); // Display ON
+    // TODO: Implement initialization sequence
+    // 1. Turn display OFF (0xAE)
+    // 2. Set segment remap (0xA1)
+    // 3. Set COM scan direction (0xC8)
+    // 4. Set display offset (0xD3, 0x00)
+    // 5. Set display start line (0x40)
+    // 6. Set multiplex ratio (0xA8, 0x3F)
+    // 7. Set COM pins configuration (0xDA, 0x12)
+    // 8. Set normal display mode (0xA6)
+    // 9. Set column address range (0x21, 0x00, 0x7F)
+    // 10. Set page address range (0x22, 0x00, 0x07)
+    // 11. Turn display ON (0xAF)
 }
 
+// TODO: Implement framebuffer write function
+// Handle data transfer from userspace to display
 static ssize_t ssd1309fb_write(struct fb_info *info, const char __user *buf,
                                size_t count, loff_t *ppos)
 {
     struct oled_device *oled = info->par;
-    size_t to_copy = min_t(size_t, count, SSD1309_BUF_SIZE);
-
-    mutex_lock(&oled->lock);
-
-    if (copy_from_user(oled->buffer, buf, to_copy)) {
-        mutex_unlock(&oled->lock);
-        return -EFAULT;
-    }
-
-    memcpy(info->screen_base, oled->buffer, to_copy);
-    ssd1309fb_update_display(oled);
-
-    mutex_unlock(&oled->lock);
-    return to_copy;
-}
-
-static int ssd1309fb_cursor(struct fb_info *info, struct fb_cursor *cursor)
-{
+    
+    // TODO: Implement write function with proper error handling
+    // Copy data from userspace, update display, return bytes written
+    
     return 0;
 }
 
+
+// TODO: Define framebuffer operations
 static struct fb_ops ssd1309fb_ops = {
     .owner = THIS_MODULE,
-    .fb_write = ssd1309fb_write,
-    .fb_cursor = ssd1309fb_cursor,
-    .fb_fillrect = sys_fillrect,
-    .fb_copyarea = sys_copyarea,
-    .fb_imageblit = sys_imageblit,
+    // TODO: Fill in required operations
 };
 
+// TODO: Implement sysfs show function for display_on attribute
 static ssize_t display_on_show(struct device *dev,
                                 struct device_attribute *attr, char *buf)
 {
-    return sysfs_emit(buf, "1\n");
+    // TODO: Return current display state
+    return 0;
 }
 
+// TODO: Implement sysfs store function for display_on attribute
 static ssize_t display_on_store(struct device *dev,
                                  struct device_attribute *attr,
                                  const char *buf, size_t count)
 {
     struct fb_info *info = dev_get_drvdata(dev);
     struct oled_device *oled = info->par;
-    bool on;
-
-    if (kstrtobool(buf, &on) < 0)
-        return -EINVAL;
-
-    mutex_lock(&oled->lock);
-    regmap_write(oled->regmap, 0x00, on ? 0xAF : 0xAE);
-    mutex_unlock(&oled->lock);
-
+    
+    // TODO: Implement display on/off control (0xAF for ON, 0xAE for OFF)
+    
     return count;
 }
 
 static DEVICE_ATTR_RW(display_on);
 
+// TODO: Implement driver probe function
 static int ssd1309fb_probe(struct i2c_client *client, const struct i2c_device_id *id)
 {
     struct fb_info *info;
     struct oled_device *oled;
     u8 *fb_buffer;
-
-    info = framebuffer_alloc(sizeof(struct oled_device), &client->dev);
-    if (!info)
-        return -ENOMEM;
-
-    oled = info->par;
-    oled->client = client;
-    mutex_init(&oled->lock);
-
-    oled->regmap = devm_regmap_init_i2c(client, &ssd1309_regmap_config);
-    if (IS_ERR(oled->regmap))
-        return PTR_ERR(oled->regmap);
-
-    oled->buffer = devm_kzalloc(&client->dev, SSD1309_BUF_SIZE, GFP_KERNEL);
-    if (!oled->buffer)
-        return -ENOMEM;
-
-    fb_buffer = vzalloc(SSD1309_BUF_SIZE);
-    if (!fb_buffer)
-        return -ENOMEM;
-
-    oled->info = info;
-    info->screen_base = (char __force __iomem *)fb_buffer;
-    info->fbops = &ssd1309fb_ops;
-    info->fix = (struct fb_fix_screeninfo) {
-        .id = "ssd1309fb",
-        .type = FB_TYPE_PACKED_PIXELS,
-        .visual = FB_VISUAL_MONO10,
-        .line_length = SSD1309_WIDTH / 8,
-        .smem_len = SSD1309_BUF_SIZE,
-    };
-    info->var = (struct fb_var_screeninfo) {
-        .xres = SSD1309_WIDTH,
-        .yres = SSD1309_HEIGHT,
-        .xres_virtual = SSD1309_WIDTH,
-        .yres_virtual = SSD1309_HEIGHT,
-        .bits_per_pixel = 1,
-    };
-    info->par = oled;
-
-    ssd1309_hw_init(oled);
-
-    register_framebuffer(info);
-    i2c_set_clientdata(client, info);
-
-    dev_set_drvdata(&client->dev, info);
-    device_create_file(&client->dev, &dev_attr_display_on);
-
-    dev_info(&client->dev, "SSD1309 framebuffer registered at /dev/fb0\n");
+    
+    // TODO: Implement probe function
+    // Allocate structures, initialize hardware, register framebuffer
+    
     return 0;
 }
 
+// TODO: Implement driver remove function
 static void ssd1309fb_remove(struct i2c_client *client)
 {
     struct fb_info *info = i2c_get_clientdata(client);
-    struct oled_device *oled = info->par;
-
-    device_remove_file(&client->dev, &dev_attr_display_on);
-    unregister_framebuffer(info);
-    vfree(info->screen_base);
-    framebuffer_release(info);
-
-    dev_info(&client->dev, "SSD1309 framebuffer removed\n");
+    
+    // TODO: Implement cleanup
 }
 
+// TODO: Define device ID table
 static const struct i2c_device_id ssd1309fb_id[] = {
-    { "ssd1309fb", 0 },
+    // TODO: Add device ID
     { }
 };
 MODULE_DEVICE_TABLE(i2c, ssd1309fb_id);
 
+// TODO: Define device tree compatible strings
 static const struct of_device_id ssd1309fb_dt_ids[] = {
-    { .compatible = "solomon,ssd1309" },
+    // TODO: Add device tree compatible string
     { }
 };
 MODULE_DEVICE_TABLE(of, ssd1309fb_dt_ids);
 
+// TODO: Define I2C driver structure
 static struct i2c_driver ssd1309fb_driver = {
-    .driver = {
-        .name = "ssd1309fb",
-        .of_match_table = ssd1309fb_dt_ids,
-    },
-    .probe = ssd1309fb_probe,
-    .remove = ssd1309fb_remove,
-    .id_table = ssd1309fb_id,
+    // TODO: Fill in driver structure
 };
 
-module_i2c_driver(ssd1309fb_driver);
+// TODO: Register the driver
 
-MODULE_AUTHOR("Bạn");
-MODULE_DESCRIPTION("SSD1309 OLED framebuffer driver with sysfs");
+MODULE_AUTHOR("Interview Candidate");
+MODULE_DESCRIPTION("SSD1309 OLED framebuffer driver - Complete the implementation");
 MODULE_LICENSE("GPL");
