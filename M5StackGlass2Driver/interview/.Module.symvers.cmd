@@ -1,0 +1,1 @@
+cmd_/home/ivbox/interview/pfw-iv-box/M5StackGlass2Driver/driver/Module.symvers :=  sed 's/ko$$/o/'  /home/ivbox/interview/pfw-iv-box/M5StackGlass2Driver/driver/modules.order | scripts/mod/modpost -m -a    -o /home/ivbox/interview/pfw-iv-box/M5StackGlass2Driver/driver/Module.symvers -e -i Module.symvers -T - 

@@ -1,0 +1,1 @@
+cmd_/home/ivbox/interview/pfw-iv-box/M5StackGlass2Driver/driver/ssd1309fb.ko := ld -r -EL -z noexecstack --build-id=sha1  -T scripts/module.lds -o /home/ivbox/interview/pfw-iv-box/M5StackGlass2Driver/driver/ssd1309fb.ko /home/ivbox/interview/pfw-iv-box/M5StackGlass2Driver/driver/ssd1309fb.o /home/ivbox/interview/pfw-iv-box/M5StackGlass2Driver/driver/ssd1309fb.mod.o;  true

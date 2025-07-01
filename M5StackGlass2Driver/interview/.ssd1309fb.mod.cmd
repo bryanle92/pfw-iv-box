@@ -1,0 +1,1 @@
+cmd_/home/ivbox/interview/pfw-iv-box/M5StackGlass2Driver/driver/ssd1309fb.mod := printf '%s\n'   ssd1309fb.o | awk '!x[$$0]++ { print("/home/ivbox/interview/pfw-iv-box/M5StackGlass2Driver/driver/"$$0) }' > /home/ivbox/interview/pfw-iv-box/M5StackGlass2Driver/driver/ssd1309fb.mod
